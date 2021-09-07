@@ -41,7 +41,38 @@ exports.getAllProducts = async (req, res) => {
 	}
 }
 
-exports.getProductById = async (req, res) => {}
-exports.deleteProduct = async (req, res) => {}
+exports.getProductById = async (req, res) => {
+	// mostrar el id
+	const { id } = req.params
+
+	try {
+		const product = await Product.findById(id).populate({ path: 'author' })
+
+		return resSuccess(res, product)
+	} catch (error) {
+		console.log(error)
+		return resError(res, 500, 'Error al obtener datos del producto.')
+	}
+}
+
+exports.deleteProduct = async (req, res) => {
+	// mostrar el id
+	const { id } = req.params
+
+	try {
+		// obtenemos el producto
+		const product = await Product.findById(id)
+		// eliminamos en cloudinary
+		await cloudinary.uploader.destroy(product.cloudinaryId)
+		// eliminamos en la db
+		await product.remove()
+
+		return resSuccess(res, { message: 'Producto eliminado.' })
+	} catch (error) {
+		console.log(error)
+		return resError(res, 500, 'Error al eliminar el producto.')
+	}
+}
+
 exports.voteProduct = async (req, res) => {}
 exports.commentProduct = async (req, res) => {}
