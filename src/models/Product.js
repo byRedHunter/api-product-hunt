@@ -28,6 +28,11 @@ const productSchema = new Schema({
 		required: true,
 		trim: true,
 	},
+	cloudinaryId: {
+		type: String,
+		required: true,
+		trim: true,
+	},
 	author: {
 		type: Schema.Types.ObjectId,
 		ref: 'User',

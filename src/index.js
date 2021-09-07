@@ -20,6 +20,7 @@ const PORT = process.env.PORT || 5000
 
 // rutas de la app
 app.use('/api/user', require('./routes/user.route'))
+app.use('/api/product', require('./routes/product.route'))
 
 // levantar la app
 app.listen(PORT, () => {
