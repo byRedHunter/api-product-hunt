@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const { resError } = require('./response')
 require('dotenv').config({ path: '.env' })
 
 exports.isAuth = (req, res, next) => {
