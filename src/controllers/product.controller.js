@@ -74,5 +74,59 @@ exports.deleteProduct = async (req, res) => {
 	}
 }
 
-exports.voteProduct = async (req, res) => {}
-exports.commentProduct = async (req, res) => {}
+exports.voteProduct = async (req, res) => {
+	// mostrar el id
+	const { id } = req.params
+
+	try {
+		// obtenemos el producto
+		let product = await Product.findById(id)
+
+		// verificamos si el producto existe
+		if (!product) return resError(res, 400, 'Este producto no existe.')
+
+		// verificar si el usuario ya voto
+		if (product.hasVoted.includes(req.user.id))
+			return resError(res, 400, 'Ud. ya ha registrado su voto.')
+
+		// incrementamos el voto y añadimos al usuario que esta votando
+		product.votes++
+		product.hasVoted = [...product.hasVoted, req.user.id]
+
+		// guardamos los cambios
+		product.save()
+
+		return resSuccess(res, product)
+	} catch (error) {
+		console.log(error)
+		return resError(res, 500, 'Error al votar.')
+	}
+}
+
+exports.commentProduct = async (req, res) => {
+	// mostrar el id
+	const { id } = req.params
+	const { message } = req.body
+
+	try {
+		// obtenemos el producto
+		let product = await Product.findById(id)
+
+		// verificamos si el producto existe
+		if (!product) return resError(res, 400, 'Este producto no existe.')
+
+		// incrementamos el voto y añadimos al usuario que esta votando
+		product.comments = [
+			...product.comments,
+			{ comment: message, user: req.user.name },
+		]
+
+		// guardamos los cambios
+		product.save()
+
+		return resSuccess(res, product)
+	} catch (error) {
+		console.log(error)
+		return resError(res, 500, 'Error al registrar su comentario.')
+	}
+}

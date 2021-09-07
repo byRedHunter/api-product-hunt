@@ -25,9 +25,9 @@ router.get('/:id', getProductById)
 router.delete('/:id', isAuth, deleteProduct)
 
 // votar un producto
-router.post('/vote', isAuth, voteProduct)
+router.put('/vote/:id', isAuth, voteProduct)
 
 // commentar un producto
-router.post('/comment', isAuth, commentProduct)
+router.put('/comment/:id', isAuth, commentProduct)
 
 module.exports = router
