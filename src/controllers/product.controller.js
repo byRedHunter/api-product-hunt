@@ -28,7 +28,19 @@ exports.createProduct = async (req, res) => {
 	}
 }
 
-exports.getAllProducts = async (req, res) => {}
+exports.getAllProducts = async (req, res) => {
+	try {
+		const products = await Product.find({}).sort({ created: -1 }).populate({
+			path: 'author',
+		})
+
+		return resSuccess(res, products)
+	} catch (error) {
+		console.log(error)
+		return resError(res, 500, 'Error al obtener los productos.')
+	}
+}
+
 exports.getProductById = async (req, res) => {}
 exports.deleteProduct = async (req, res) => {}
 exports.voteProduct = async (req, res) => {}
