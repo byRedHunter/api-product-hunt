@@ -3,22 +3,18 @@ const { resError } = require('./response')
 require('dotenv').config({ path: '.env' })
 
 exports.isAuth = (req, res, next) => {
-	// llega a travez de la autorization
-	const authHeader = req.get('authorization')
+	// llega a travez del header de req
+	const token = req.header('auth-token')
 
 	// si no existe, mostramos mensaje
-	if (!authHeader)
+	if (!token)
 		return resError(
 			res,
 			400,
 			'Debe de autenticarse para acceder a la aplicación.'
 		)
 
-	// si existe
-	// obtener el token
-	const token = authHeader.split(' ')[1] // convertimos a array y obtenemos el elemento en la pos 1
-
-	// comprobar jwt
+	// comprobar token con jwt
 	try {
 		// token correcto
 		const user = jwt.verify(token, process.env.SECRET)

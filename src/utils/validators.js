@@ -1,11 +1,4 @@
-const { check, validationResult } = require('express-validator')
-const { resValidator } = require('./response')
-
-// verificar si express-validator atrapa errores de validación
-exports.verifyValidator = (req, res) => {
-	const errors = validationResult(req)
-	if (!errors.isEmpty()) return resValidator(res, { errors: errors.array() })
-}
+const { check } = require('express-validator')
 
 // validar compos para el registro de usuario
 exports.checkCreateUser = [

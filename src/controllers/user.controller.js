@@ -1,12 +1,13 @@
+const { validationResult } = require('express-validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
-const { resError, resSuccess } = require('../utils/response')
-const { verifyValidator } = require('../utils/validators')
+const { resError, resSuccess, resValidator } = require('../utils/response')
 
 exports.createUser = async (req, res) => {
 	// verificamos errores de express-validator
-	verifyValidator(req, res)
+	const errors = validationResult(req)
+	if (!errors.isEmpty()) return resValidator(res, { errors: errors.array() })
 
 	// comenzar con registro de usuario
 	const { email, password } = req.body
@@ -25,7 +26,18 @@ exports.createUser = async (req, res) => {
 		// guardamos al usuario en la db
 		await user.save()
 
-		return resSuccess(res, user)
+		// autenticar usuario
+		const token = jwt.sign(
+			{
+				id: user._id,
+				name: user.name,
+				email: user.email,
+			},
+			process.env.SECRET,
+			{ expiresIn: '4h' }
+		)
+
+		return resSuccess(res, { token })
 	} catch (error) {
 		console.log(error)
 		return resError(res, 500, 'Error al crear usuario.')
@@ -34,7 +46,8 @@ exports.createUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
 	// verificar errores de express-validator
-	verifyValidator(req, res)
+	const errors = validationResult(req)
+	if (!errors.isEmpty()) return resValidator(res, { errors: errors.array() })
 
 	// verificar si el usuario ya esta registrado
 	const { email, password } = req.body
