@@ -32,6 +32,7 @@ exports.getAllProducts = async (req, res) => {
 	try {
 		const products = await Product.find({}).sort({ created: -1 }).populate({
 			path: 'author',
+			select: '_id name email',
 		})
 
 		return resSuccess(res, products)
@@ -46,12 +47,36 @@ exports.getProductById = async (req, res) => {
 	const { id } = req.params
 
 	try {
-		const product = await Product.findById(id).populate({ path: 'author' })
+		const product = await Product.findById(id).populate({
+			path: 'author',
+			select: '_id name email',
+		})
 
 		return resSuccess(res, product)
 	} catch (error) {
 		console.log(error)
 		return resError(res, 500, 'Error al obtener datos del producto.')
+	}
+}
+
+exports.searchProduct = async (req, res) => {
+	const { search } = req.params
+
+	try {
+		// i insensitivity le da igual si es mayus o minus
+		const result = await Product.find({
+			product: { $regex: `.*${search}.*`, $options: 'i' },
+		})
+			.sort({ created: -1 })
+			.populate({
+				path: 'author',
+				select: '_id name email',
+			})
+
+		return resSuccess(res, result)
+	} catch (error) {
+		console.log(error)
+		return resError(res, 500, 'Error al buscar producto.')
 	}
 }
 
@@ -118,7 +143,7 @@ exports.commentProduct = async (req, res) => {
 		// incrementamos el voto y añadimos al usuario que esta votando
 		product.comments = [
 			...product.comments,
-			{ comment: message, user: req.user.name },
+			{ comment: message, user: req.user.name, id: req.user.id },
 		]
 
 		// guardamos los cambios

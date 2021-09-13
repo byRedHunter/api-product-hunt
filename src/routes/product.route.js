@@ -6,6 +6,7 @@ const {
 	deleteProduct,
 	voteProduct,
 	commentProduct,
+	searchProduct,
 } = require('../controllers/product.controller')
 const { isAuth } = require('../utils/isUserAuth')
 const { multerImage } = require('../utils/multer')
@@ -20,6 +21,9 @@ router.get('/', getAllProducts)
 
 // obtner un producto por el id
 router.get('/:id', getProductById)
+
+// buscar producto
+router.get('/search/:search', searchProduct)
 
 // eliminar un producto por el id
 router.delete('/:id', isAuth, deleteProduct)
